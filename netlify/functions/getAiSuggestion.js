@@ -25,7 +25,8 @@ exports.handler = async function(event, context) {
     console.log("使用者輸入的問題是:", prompt);
 
     // 3. 準備發送請求到 Gemini API
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`, {
+    // 這是【新的】程式碼，請用它來替換
+const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
