@@ -1,0 +1,214 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>心靈指南 - 您的線上解惑天地</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Serif TC', serif;
+            background-color: #0c0a1a;
+            color: #e0e0e0;
+            background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"%3E%3Cg fill="%231a1a3a" fill-opacity="0.4"%3E%3Ccircle cx="50" cy="50" r="1"/%3E%3Ccircle cx="10" cy="10" r="1"/%3E%3Ccircle cx="90" cy="90" r="1"/%3E%3Ccircle cx="10" cy="90" r="1"/%3E%3Ccircle cx="90" cy="10" r="1"/%3E%3Ccircle cx="30" cy="70" r="1"/%3E%3Ccircle cx="70" cy="30" r="1"/%3E%3C/g%3E%3C/svg%3E');
+        }
+        .card {
+            background: rgba(25, 25, 45, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 215, 0, 0.5);
+        }
+        .btn-primary {
+            background: linear-gradient(145deg, #8a2be2, #4a00e0);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        .btn-primary:hover {
+            background: linear-gradient(145deg, #9b4de0, #5b14e7);
+        }
+        .spinner {
+            border-color: rgba(255, 255, 255, 0.2);
+            border-top-color: #e9d5ff;
+        }
+        .result-box {
+            white-space: pre-wrap;
+            background-color: rgba(0,0,0,0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="container mx-auto px-4 py-8 md:py-16">
+        <header class="text-center mb-12 md:mb-20">
+            <h1 class="text-4xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-yellow-300 mb-4">心靈指南</h1>
+            <p class="text-lg md:text-xl text-purple-200">探索內心宇宙，解答生命疑惑</p>
+        </header>
+
+        <main>
+            <div id="service-selection" class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                <!-- 服務卡片 -->
+                <div class="card rounded-2xl p-8 text-center cursor-pointer" data-service="love">
+                    <div class="text-5xl mb-4">💖</div>
+                    <h2 class="text-2xl font-semibold text-white mb-2">愛情解惑</h2>
+                    <p class="text-purple-200">解答您在感情路上的所有迷惘與困惑。</p>
+                </div>
+                <div class="card rounded-2xl p-8 text-center cursor-pointer" data-service="tarot">
+                    <div class="text-5xl mb-4">🃏</div>
+                    <h2 class="text-2xl font-semibold text-white mb-2">每日塔羅</h2>
+                    <p class="text-purple-200">抽取一張塔羅牌，為您提供今日的指引。</p>
+                </div>
+                <div class="card rounded-2xl p-8 text-center cursor-pointer" data-service="iching">
+                    <div class="text-5xl mb-4">☯️</div>
+                    <h2 class="text-2xl font-semibold text-white mb-2">易經占卜</h2>
+                    <p class="text-purple-200">透過古老的智慧，為您當前的處境提供建議。</p>
+                </div>
+            </div>
+
+            <div id="query-interface" class="hidden mt-12 max-w-3xl mx-auto text-center">
+                <button id="back-btn" class="mb-4 text-purple-300 hover:text-white">&larr; 返回選擇服務</button>
+                <h2 id="interface-title" class="text-3xl font-bold mb-4"></h2>
+                <p id="interface-desc" class="mb-6"></p>
+                <div id="input-area">
+                    <textarea id="user-input" class="w-full p-4 bg-gray-800 border border-purple-800 rounded-lg text-lg focus:ring-2 focus:ring-purple-500 focus:outline-none" rows="5" placeholder="請在這裡輸入您的問題..."></textarea>
+                    <button id="submit-btn" class="btn-primary text-white font-bold py-3 px-8 rounded-full mt-6 text-lg inline-flex items-center">
+                        <span id="spinner" class="hidden"><svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg></span>
+                        <span id="submit-btn-text">獲得指引</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div id="result-display" class="hidden mt-8 max-w-3xl mx-auto">
+                <div class="result-box"></div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const serviceSelection = document.getElementById('service-selection');
+        const queryInterface = document.getElementById('query-interface');
+        const resultDisplay = document.getElementById('result-display');
+        const backBtn = document.getElementById('back-btn');
+        const userInput = document.getElementById('user-input');
+        const submitBtn = document.getElementById('submit-btn');
+        
+        let currentService = '';
+
+        const serviceDetails = {
+            love: {
+                title: '愛情解惑',
+                description: '請在下方詳細描述您遇到的感情問題，越具體越好。AI 將以溫暖且富有同理心的語氣，為您提供思考方向。',
+                placeholder: '例如：我最近和伴侶經常吵架，不知道該如何溝通...',
+                buttonText: '解讀我的煩惱',
+                promptPrefix: '你是一位富有同理心且智慧的感情顧問。請用溫暖、正向且具啟發性的語氣，針對以下問題提供建議，並避免給出絕對性的答案，多提供思考方向。問題：'
+            },
+            tarot: {
+                title: '每日塔羅',
+                description: '請靜下心來，專注於您今天最想了解的主題，然後點擊按鈕，讓宇宙為您抽出一張指引牌。',
+                placeholder: '這個服務不需要輸入問題，直接點擊按鈕即可抽牌。',
+                buttonText: '抽取我的今日指引',
+                promptPrefix: '你是一位神秘的塔羅牌占卜師。請為我抽一張今日的每日塔羅牌。請告訴我牌的名稱（包含正位或逆位）、詳細的牌義解釋（包含整體運勢、愛情、事業方面），並給我一句今日的心靈指引。請用詩意且引人入勝的文筆呈現，直接開始，不要有任何開場白。'
+            },
+            iching: {
+                title: '易經占卜',
+                description: '請在下方輸入您目前正煩惱或想詢問的事情，AI 將為您卜出一個卦象，並提供對應的解析與建議。',
+                placeholder: '例如：我最近有一個新的工作機會，不知道該不該接受？',
+                buttonText: '開始占卜',
+                promptPrefix: '你是一位精通易經的智者。請針對以下問題，隨機生成一個易經卦象（包含本卦和變卦），並提供詳細的卦辭、爻辭解釋，以及對應此問題的現代白話文解析與建議。問題：'
+            }
+        };
+        
+        serviceSelection.addEventListener('click', (e) => {
+            const card = e.target.closest('.card');
+            if (!card) return;
+
+            currentService = card.dataset.service;
+            const details = serviceDetails[currentService];
+
+            document.getElementById('interface-title').textContent = details.title;
+            document.getElementById('interface-desc').textContent = details.description;
+            userInput.placeholder = details.placeholder;
+            document.getElementById('submit-btn-text').textContent = details.buttonText;
+            
+            if(currentService === 'tarot') {
+                userInput.style.display = 'none';
+            } else {
+                userInput.style.display = 'block';
+            }
+
+            serviceSelection.classList.add('hidden');
+            queryInterface.classList.remove('hidden');
+            resultDisplay.classList.add('hidden');
+            resultDisplay.querySelector('.result-box').innerHTML = '';
+        });
+
+        backBtn.addEventListener('click', () => {
+            serviceSelection.classList.remove('hidden');
+            queryInterface.classList.add('hidden');
+            resultDisplay.classList.add('hidden');
+            userInput.value = '';
+        });
+
+        submitBtn.addEventListener('click', async () => {
+            const question = userInput.value.trim();
+            const details = serviceDetails[currentService];
+
+            if (currentService !== 'tarot' && !question) {
+                alert('請輸入您的問題！');
+                return;
+            }
+
+            const spinner = document.getElementById('spinner');
+            spinner.classList.remove('hidden');
+            submitBtn.disabled = true;
+            resultDisplay.classList.add('hidden');
+
+            const fullPrompt = `${details.promptPrefix} "${question}"`;
+
+            const resultData = await callApiViaBackend(fullPrompt);
+            
+            resultDisplay.querySelector('.result-box').textContent = resultData.text || '無法取得回應。';
+            resultDisplay.classList.remove('hidden');
+
+            spinner.classList.add('hidden');
+            submitBtn.disabled = false;
+            
+            resultDisplay.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+
+        async function callApiViaBackend(prompt) {
+            const backendUrl = '/.netlify/functions/getAiSuggestion'; 
+
+            try {
+                const response = await fetch(backendUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt: prompt })
+                });
+
+                if (!response.ok) { throw new Error(`後端請求失敗`); }
+                
+                const result = await response.json();
+                
+                return { text: result.text };
+            } catch (error) {
+                console.error("呼叫後端時發生錯誤:", error);
+                return { text: "抱歉，連線至 AI 服務時發生錯誤，請稍後再試。" };
+            }
+        }
+    </script>
+</body>
+</html>
+```
