@@ -54,10 +54,13 @@ const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/m
     console.log("成功解析來自 Gemini 的 JSON 資料。");
 
     // 5. 成功，將 AI 的回答回傳給前端
-    return {
-      statusCode: 200,
-      body: JSON.stringify(data)
-    };
+    const aiResponseText = data.candidates[0].content.parts[0].text;
+console.log("準備回傳給前端的純文字:", aiResponseText);
+
+return {
+  statusCode: 200,
+  body: JSON.stringify({ message: aiResponseText })
+};
 
   } catch (error) {
     // 6. 捕捉到任何前面發生的錯誤，並印出來
