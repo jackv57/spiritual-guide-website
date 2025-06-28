@@ -202,7 +202,7 @@
                 
                 const result = await response.json();
                 
-                return { text: result.text };
+                return { text: result.message };
             } catch (error) {
                 console.error("呼叫後端時發生錯誤:", error);
                 return { text: "抱歉，連線至 AI 服務時發生錯誤，請稍後再試。" };
