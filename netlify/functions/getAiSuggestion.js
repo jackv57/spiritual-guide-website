@@ -26,8 +26,8 @@ exports.handler = async function(event, context) {
 
     // 3. 準備發送請求到 Gemini API
     // --- 這是【已修正】的區塊 ---
-    // 修正 3: 根據 404 錯誤，移除模型名稱中的 "-latest"
-    const response = await fetch('https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent', { 
+    // 修正 4: 根據 404 錯誤，我們回到 v1beta，但保留新的 header 驗證方式
+    const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent', { 
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
