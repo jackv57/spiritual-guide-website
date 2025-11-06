@@ -25,11 +25,12 @@ exports.handler = async function(event, context) {
     console.log("使用者輸入的問題是:", prompt);
 
     // 3. 準備發送請求到 Gemini API
-    // 這是【新的】程式碼，請用它來替換
-const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`, {
+    // --- 這是【已修正】的區塊 ---
+    const response = await fetch('https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent', { // <-- 修正 1: 網址改為 v1 且移除 key
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'x-goog-api-key': apiKey // <-- 修正 2: API Key 移到 header
       },
       body: JSON.stringify({
         contents: [{
@@ -39,13 +40,14 @@ const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/m
         }]
       })
     });
+    // --- 修正結束 ---
     
     // 4. 加上日誌，看看 Gemini API 的回應狀態
     console.log("收到 Gemini 的回應，狀態碼:", response.status);
 
     if (!response.ok) {
       // 如果回應不成功 (例如 400, 500 錯誤)，印出詳細錯誤
-      const errorData = await response.text();
+      const errorData = await response.text(); // 改用 .text() 來確保能讀取任何錯誤訊息
       console.error("Gemini API 回傳錯誤:", errorData);
       throw new Error(`Gemini API error: ${errorData}`);
     }
@@ -54,13 +56,18 @@ const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/m
     console.log("成功解析來自 Gemini 的 JSON 資料。");
 
     // 5. 成功，將 AI 的回答回傳給前端
+    // 加上安全檢查，防止 data.candidates 為空
+    if (!data.candidates || data.candidates.length === 0) {
+      console.error("Gemini 回應中沒有 candidates");
+      throw new Error("AI 未能產生有效的回答。");
+    }
     const aiResponseText = data.candidates[0].content.parts[0].text;
-console.log("準備回傳給前端的純文字:", aiResponseText);
+    console.log("準備回傳給前端的純文字:", aiResponseText);
 
-return {
-  statusCode: 200,
-  body: JSON.stringify({ message: aiResponseText })
-};
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ message: aiResponseText })
+    };
 
   } catch (error) {
     // 6. 捕捉到任何前面發生的錯誤，並印出來
