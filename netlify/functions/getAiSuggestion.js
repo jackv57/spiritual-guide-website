@@ -26,11 +26,12 @@ exports.handler = async function(event, context) {
 
     // 3. 準備發送請求到 Gemini API
     // --- 這是【已修正】的區塊 ---
-    const response = await fetch('https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent', { // <-- 修正 1: 網址改為 v1 且移除 key
+    // 修正 3: 根據 404 錯誤，移除模型名稱中的 "-latest"
+    const response = await fetch('https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent', { 
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-goog-api-key': apiKey // <-- 修正 2: API Key 移到 header
+        'x-goog-api-key': apiKey // API Key 放在 header
       },
       body: JSON.stringify({
         contents: [{
